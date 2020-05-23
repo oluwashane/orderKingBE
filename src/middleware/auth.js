@@ -33,7 +33,7 @@ const isAdmin = async (req, res, next) => {
         req.admin = user
         next();
     } catch (e) {
-        res.status(401).send({ error: "Please authenticate."})
+        res.status(401).send({ error: "Administrators only"})
     }
 }
 
