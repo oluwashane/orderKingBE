@@ -1,6 +1,4 @@
 const Order = require("../models/order.model");
-// const User = require("../models/user.model");
-
 
 const placeOrder = async (req, res) => {
     const order = new Order({
@@ -10,7 +8,6 @@ const placeOrder = async (req, res) => {
         customer_address: req.user.address,
         customer_tel: req.user.tel
     })
-
     try {
         await order.save();
         res.status(200).send(order);
@@ -22,7 +19,6 @@ const placeOrder = async (req, res) => {
 const getOrder = async (req, res) => {
     try {
         const order = await Order.find({});
-        console.log(order);
         res.send({ order });
     } catch (e) {
         res.sendStatus(500)

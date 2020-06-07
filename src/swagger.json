@@ -1,0 +1,550 @@
+{
+    "openapi":"3.0.2",
+    "info": {
+        "title":"OrderKing",
+        "description": "A food logistics web API",
+        "version":"0.0.1"
+    },
+    "servers": [
+        {"url":"https://orderking.herokuapp.com/"}
+    ],
+    "paths": {
+        "/signup": {
+            "post": {
+                "summary": "create new user",
+                "tags": ["Users"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "tel": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "isAdmin": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "summary": "user login",
+                "tags": ["Users"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type":"object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": {
+                                    "email": "johndoe@gmail.com",
+                                    "password": "1234doe"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "summary": "logout current logged in user",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "tags": ["Users"],
+                "description": "Logs out current logged in user session",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
+        "/logoutAll": {
+            "post": {
+                "summary": "logout all devices logged in by user",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "tags": ["Users"],
+                "description": "Logs out current logged in user session for all active devices ",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "summary": "view all registered users",
+                "tags": ["Users"],
+                "description": "This can only be done by the logged in user",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/me": {
+            "get": {
+                "summary": "view user profile",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "tags": ["Users"],
+                "description": "This can only be done by the logged in user",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Users"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "update user profile",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "tags": ["Users"],
+                "description": "This can only be done by the logged in user",
+                "requestBody":{
+                    "$ref": "#/components/requestBodies/userBody"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema":{
+                                    "$ref": "#/components/schemas/Users"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "delete user profile",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": false
+                    }
+                ],
+                "tags": ["Users"],
+                "description": "This can only be done by the logged in user",
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    }
+                }
+            }
+        },
+        "/order": {
+            "post": {
+                "summary": "place an order for food",
+                "tags": ["Orders"],
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "requestBody":{
+                    "$ref": "#/components/requestBodies/orderBody"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema":{
+                                    "$ref": "#/components/schemas/Order"
+                                },
+                                "example": {
+                                    "name": "cat fish",
+                                    "quantity": 3
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
+                }
+            },
+            "get": {
+                "summary": "returns orders placed by users",
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "tags": ["Orders"],
+                "description": "This can only be accessed by admins",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema":{
+                                    "$ref": "#/components/schemas/Menu"
+                                },
+                                "example": {
+                                    "name": "cat fish",
+                                    "quantity": 3,
+                                    "customer": "5ea6c70905d2ca7b98aec439"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        },
+        "/menu": {
+            "post": {
+                "summary": "add new menu",
+                "tags": ["Menu"],
+                "security": [{
+                    "bearerAuth": []
+                }],
+                "requestBody":{
+                    "$ref": "#/components/requestBodies/menuBody"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content":{
+                            "application/json": {
+                                "schema":{
+                                    "$ref": "#/components/schemas/Menu"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    }
+                }
+            },
+            "get": {
+                "summary": "return list of menu",
+                "tags":["Menu"],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema":{
+                                    "$ref": "#/components/schemas/Menu"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/menu/{id}": {
+            "patch": {
+                "summary": "update items in menu by ID",
+                "tags":["Menu"],
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in":"path",
+                        "description": "Menu ID",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody":{
+                    "$ref": "#/components/requestBodies/menuBody"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schema/Menu"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "delete items in menu by ID",
+                "tags":["Menu"],
+                "security": [
+                    {"bearerAuth": []}
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in":"path",
+                        "description": "Menu ID",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/Unauthorized"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/ServerError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type":"http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "requestBodies": {
+            "userBody": {
+                "description": "it contains user information",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Users"
+                        }
+                    }
+                }
+            },
+            "menuBody": {
+                "description": "it contains menu information",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Menu"
+                        }
+                    }
+                }
+            },
+            "orderBody": {
+                "description": "it contains order information",
+                "required": true,
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Order"
+                        }
+                    }
+                }
+            }
+        },
+        "responses": {
+            "NotFound": {
+                "description": "The specified resource was not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "Unauthorized": {
+                "description": "Unauthorized",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            },
+            "ServerError": {
+                "description": "Internal Server Error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            }
+            ,
+            "BadRequest": {
+                "description": "Bad Request",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "Users": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string"
+                    },
+                    "tel": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    }
+                },
+                "required":["username", "password", "tel", "address"] 
+            },
+            "Order": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "quantity": {
+                        "type": "integer"
+                    }
+                },
+                "required": ["name", "quantity"]
+            },
+            "Menu": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type":"string"
+                    },
+                    "price": {
+                        "type": "string"
+                    },
+                    "image": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "name": "meat pie",
+                    "price": "500",
+                    "image": "link"
+                },
+                "required": ["name", "price", "image"]
+            },
+            "Error": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type":"string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "required": ["code", "message"]
+            }
+        }
+    }
+}

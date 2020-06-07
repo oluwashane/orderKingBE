@@ -1,9 +1,22 @@
 const Menu = require("../models/menu.model");
+const Pusher = require('pusher');
+
+const pusher = new Pusher({
+    appId: process.env.APPID,
+    key: process.env.KEY,
+    secret: process.env.SECRET,
+    cluster: 'mt1',
+    useTLS: true,
+});
 
 const addMenu = async (req, res) => {
     const menu = new Menu(req.body);
     try {
         await menu.save();
+        //trigger  a event in a channel with json object
+        pusher.trigger('orderKing-menu', 'order-item', {
+            data: menu
+        });
         res.status(201).send(menu);
     } catch (e) {
         res.status(400).send(e);
@@ -44,8 +57,13 @@ const updateMenu = async (req, res) => {
     }
 }
 
-const deleteMenu = async () => {
-    
+const deleteMenu = async (req, res) => {
+    try {
+        const menu = await Menu.findByIdAndDelete(req.params.id);
+        res.status(200).send(menu)
+    } catch(e) {
+        res.status(500).send()
+    }
 }
 
 module.exports = {

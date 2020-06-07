@@ -9,8 +9,8 @@ router.post("/logout", auth, logoutUser)
 router.post("/logoutAll", auth, logoutAll)
 router.get("/users", isAdmin, getUsers);
 router.get("/user/me", auth, viewProfile)
-router.patch("/users/me", auth,updateProfile);
-router.delete("/users/me", auth, deleteUser);
+router.patch("/user/me", auth,updateProfile);
+router.delete("/user/me", auth, deleteUser);
 
 
 module.exports = router;
